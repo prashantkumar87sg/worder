@@ -180,7 +180,9 @@ class WordReaderGame {
             if (countdown <= 0) {
                 clearInterval(countdownInterval);
                 this.evaluateResult(); // Evaluate after full 3 seconds
-                this.stopRecording();
+                setTimeout(() => {
+                    this.stopRecording();
+                }, 100); // Small delay to ensure evaluation completes
             }
         }, 1000);
         
@@ -206,10 +208,13 @@ class WordReaderGame {
     evaluateResult() {
         if (!this.currentBlock || !this.recordedTranscript) {
             // No speech detected, treat as incorrect
-            this.handleError();
+            const blockToUpdate = this.currentBlock;
+            this.handleError(blockToUpdate);
             return;
         }
         
+        // Store reference to current block before it gets nulled
+        const blockToUpdate = this.currentBlock;
         const expectedWord = this.currentBlock.dataset.word.toLowerCase();
         const cleanTranscript = this.recordedTranscript.toLowerCase().trim();
         
@@ -223,9 +228,9 @@ class WordReaderGame {
         const isCorrect = this.matchWord(cleanTranscript, expectedWord);
         
         if (isCorrect) {
-            this.handleSuccess();
+            this.handleSuccess(blockToUpdate);
         } else {
-            this.handleError();
+            this.handleError(blockToUpdate);
         }
     }
 
@@ -401,29 +406,35 @@ class WordReaderGame {
         return false;
     }
 
-    handleSuccess() {
-        this.currentBlock.classList.add('success');
-        this.successCount++;
-        
-        // Check if all words are completed
-        if (this.successCount === 6) {
-            setTimeout(() => {
-                this.playSuccessSound();
-                this.showConfetti();
+    handleSuccess(block) {
+        if (block) {
+            block.classList.add('success');
+            this.successCount++;
+            
+            // Check if all words are completed
+            if (this.successCount === 6) {
                 setTimeout(() => {
-                    this.loadNewWords();
-                }, 3000);
-            }, 500);
+                    this.playSuccessSound();
+                    this.showConfetti();
+                    setTimeout(() => {
+                        this.loadNewWords();
+                    }, 3000);
+                }, 500);
+            }
         }
     }
 
-    handleError() {
-        this.currentBlock.classList.add('error');
-        
-        // Remove error class after animation
-        setTimeout(() => {
-            this.currentBlock.classList.remove('error');
-        }, 500);
+    handleError(block) {
+        if (block) {
+            block.classList.add('error');
+            
+            // Remove error class after animation
+            setTimeout(() => {
+                if (block) {
+                    block.classList.remove('error');
+                }
+            }, 500);
+        }
     }
 
     playSuccessSound() {
