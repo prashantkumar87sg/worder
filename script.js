@@ -27,7 +27,7 @@ class WordReaderGame {
             this.recognition.lang = 'en-US';
             
             this.recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript.toLowerCase().trim();
+                const transcript = event.results[0][0].transcript;
                 this.handleSpeechResult(transcript);
             };
             
@@ -163,6 +163,7 @@ class WordReaderGame {
         
         this.currentBlock = block;
         this.isRecording = true;
+        this.recordedTranscript = ''; // Store the transcript
         
         // Visual feedback
         block.classList.add('recording');
@@ -178,6 +179,7 @@ class WordReaderGame {
             
             if (countdown <= 0) {
                 clearInterval(countdownInterval);
+                this.evaluateResult(); // Evaluate after full 3 seconds
                 this.stopRecording();
             }
         }, 1000);
@@ -201,11 +203,15 @@ class WordReaderGame {
         this.currentBlock = null;
     }
 
-    handleSpeechResult(transcript) {
-        if (!this.currentBlock) return;
+    evaluateResult() {
+        if (!this.currentBlock || !this.recordedTranscript) {
+            // No speech detected, treat as incorrect
+            this.handleError();
+            return;
+        }
         
         const expectedWord = this.currentBlock.dataset.word.toLowerCase();
-        const cleanTranscript = transcript.toLowerCase().trim();
+        const cleanTranscript = this.recordedTranscript.toLowerCase().trim();
         
         // Debug: Log what was heard vs expected
         console.log(`Expected: "${expectedWord}", Heard: "${cleanTranscript}"`);
@@ -221,6 +227,16 @@ class WordReaderGame {
         } else {
             this.handleError();
         }
+    }
+
+    handleSpeechResult(transcript) {
+        if (!this.currentBlock) return;
+        
+        // Store the transcript for evaluation after 3 seconds
+        this.recordedTranscript = transcript;
+        
+        // Don't evaluate immediately - wait for the full 3 seconds
+        console.log(`Speech detected: "${transcript}" - waiting for full 3 seconds...`);
     }
 
     showDebugInfo(expected, heard) {
