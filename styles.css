@@ -35,14 +35,14 @@ body {
 }
 
 .word-blocks {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
     height: 100%;
     gap: 8px;
 }
 
 .word-block {
-    flex: 1;
     background: white;
     border-radius: 20px;
     display: flex;
@@ -187,6 +187,10 @@ body {
         min-height: 70px;
         border-radius: 15px;
     }
+    
+    .word-blocks {
+        gap: 6px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -210,6 +214,10 @@ body {
     .word-block {
         min-height: 60px;
         border-radius: 12px;
+    }
+    
+    .word-blocks {
+        gap: 4px;
     }
     
     .recording-indicator {
@@ -288,7 +296,6 @@ body {
     
     .word-block {
         min-height: 50px;
-        gap: 4px;
     }
     
     .word-blocks {
