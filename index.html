@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Reader - Learn to Read</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Read the Words!</h1>
+        <div class="game-container">
+            <div class="word-blocks">
+                <div class="word-block" data-word="cat">
+                    <span class="word">cat</span>
+                    <div class="mic-icon">🎤</div>
+                </div>
+                <div class="word-block" data-word="dog">
+                    <span class="word">dog</span>
+                    <div class="mic-icon">🎤</div>
+                </div>
+                <div class="word-block" data-word="run">
+                    <span class="word">run</span>
+                    <div class="mic-icon">🎤</div>
+                </div>
+                <div class="word-block" data-word="sit">
+                    <span class="word">sit</span>
+                    <div class="mic-icon">🎤</div>
+                </div>
+                <div class="word-block" data-word="hat">
+                    <span class="word">hat</span>
+                    <div class="mic-icon">🎤</div>
+                </div>
+                <div class="word-block" data-word="map">
+                    <span class="word">map</span>
+                    <div class="mic-icon">🎤</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="recording-indicator" id="recordingIndicator">
+            <div class="recording-text">🎤 Recording...</div>
+            <div class="countdown" id="countdown">3</div>
+        </div>
+    </div>
+
+    <canvas id="confetti" class="confetti-canvas"></canvas>
+    
+    <audio id="successSound" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" preload="auto"></audio>
+
+    <script src="words.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
