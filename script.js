@@ -205,13 +205,184 @@ class WordReaderGame {
         if (!this.currentBlock) return;
         
         const expectedWord = this.currentBlock.dataset.word.toLowerCase();
-        const isCorrect = transcript.includes(expectedWord) || expectedWord.includes(transcript);
+        const cleanTranscript = transcript.toLowerCase().trim();
+        
+        // Debug: Log what was heard vs expected
+        console.log(`Expected: "${expectedWord}", Heard: "${cleanTranscript}"`);
+        
+        // Show debug info on screen (temporary)
+        this.showDebugInfo(expectedWord, cleanTranscript);
+        
+        // More flexible matching logic
+        const isCorrect = this.matchWord(cleanTranscript, expectedWord);
         
         if (isCorrect) {
             this.handleSuccess();
         } else {
             this.handleError();
         }
+    }
+
+    showDebugInfo(expected, heard) {
+        // Create or update debug display
+        let debugDiv = document.getElementById('debug-info');
+        if (!debugDiv) {
+            debugDiv = document.createElement('div');
+            debugDiv.id = 'debug-info';
+            debugDiv.style.cssText = `
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                font-family: monospace;
+                font-size: 12px;
+                z-index: 10000;
+                max-width: 300px;
+            `;
+            document.body.appendChild(debugDiv);
+        }
+        
+        debugDiv.innerHTML = `
+            <strong>Debug Info:</strong><br>
+            Expected: "${expected}"<br>
+            Heard: "${heard}"<br>
+            Match: ${this.matchWord(heard, expected) ? '✅' : '❌'}
+        `;
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            if (debugDiv) debugDiv.remove();
+        }, 3000);
+    }
+
+    matchWord(transcript, expectedWord) {
+        // Direct match
+        if (transcript === expectedWord) return true;
+        
+        // Contains match (for partial recognition)
+        if (transcript.includes(expectedWord) || expectedWord.includes(transcript)) return true;
+        
+        // Split transcript into words and check each
+        const words = transcript.split(/\s+/);
+        for (let word of words) {
+            if (word === expectedWord) return true;
+            if (word.includes(expectedWord) || expectedWord.includes(word)) return true;
+        }
+        
+        // Handle common speech recognition variations
+        const variations = {
+            'cat': ['cat', 'kat', 'khat', 'caught'],
+            'dog': ['dog', 'dawg', 'dogg'],
+            'run': ['run', 'ran', 'running'],
+            'sit': ['sit', 'sat', 'sitting'],
+            'hat': ['hat', 'hut', 'hot'],
+            'map': ['map', 'mop', 'mapp'],
+            'pig': ['pig', 'pigg'],
+            'cow': ['cow', 'coww'],
+            'fox': ['fox', 'foks'],
+            'rat': ['rat', 'ratt'],
+            'bat': ['bat', 'batt'],
+            'hen': ['hen', 'hhen'],
+            'duck': ['duck', 'duk'],
+            'eye': ['eye', 'i', 'aye'],
+            'ear': ['ear', 'eer'],
+            'arm': ['arm', 'armm'],
+            'leg': ['leg', 'legg'],
+            'lip': ['lip', 'lipp'],
+            'toe': ['toe', 'tow'],
+            'egg': ['egg', 'eg'],
+            'jam': ['jam', 'jamm'],
+            'pie': ['pie', 'pai'],
+            'nut': ['nut', 'nutt'],
+            'cup': ['cup', 'cupp'],
+            'mug': ['mug', 'mugg'],
+            'sun': ['sun', 'sunn'],
+            'moon': ['moon', 'mun'],
+            'star': ['star', 'starr'],
+            'tree': ['tree', 'tre'],
+            'leaf': ['leaf', 'leef'],
+            'rock': ['rock', 'rok'],
+            'sand': ['sand', 'sann'],
+            'red': ['red', 'redd'],
+            'blue': ['blue', 'blu'],
+            'pink': ['pink', 'pinkk'],
+            'gray': ['gray', 'grey'],
+            'brown': ['brown', 'braun'],
+            'jump': ['jump', 'jumpp'],
+            'hop': ['hop', 'hopp'],
+            'walk': ['walk', 'wok'],
+            'talk': ['talk', 'tok'],
+            'look': ['look', 'luk'],
+            'see': ['see', 'sea'],
+            'cap': ['cap', 'capp'],
+            'bag': ['bag', 'bagg'],
+            'box': ['box', 'boks'],
+            'book': ['book', 'buk'],
+            'pen': ['pen', 'penn'],
+            'key': ['key', 'kee'],
+            'door': ['door', 'dor'],
+            'wall': ['wall', 'woll'],
+            'mom': ['mom', 'mum', 'mother'],
+            'dad': ['dad', 'daddy', 'father'],
+            'boy': ['boy', 'boi'],
+            'girl': ['girl', 'gurl'],
+            'man': ['man', 'mann'],
+            'woman': ['woman', 'women'],
+            'one': ['one', '1', 'won'],
+            'two': ['two', '2', 'too', 'to'],
+            'ten': ['ten', '10'],
+            'the': ['the', 'da', 'duh'],
+            'and': ['and', 'an', '&'],
+            'for': ['for', '4', 'four'],
+            'can': ['can', 'kan'],
+            'get': ['get', 'git'],
+            'put': ['put', 'putt'],
+            'let': ['let', 'lett'],
+            'big': ['big', 'bigg'],
+            'small': ['small', 'smoll'],
+            'hot': ['hot', 'hott'],
+            'cold': ['cold', 'kold'],
+            'wet': ['wet', 'wett'],
+            'dry': ['dry', 'drai'],
+            'new': ['new', 'nu'],
+            'old': ['old', 'ol'],
+            'good': ['good', 'gud'],
+            'bad': ['bad', 'badd'],
+            'yes': ['yes', 'yess'],
+            'no': ['no', 'know'],
+            'up': ['up', 'upp'],
+            'down': ['down', 'daun'],
+            'in': ['in', 'inn'],
+            'out': ['out', 'owt'],
+            'on': ['on', 'onn'],
+            'off': ['off', 'of'],
+            'at': ['at', 'att'],
+            'to': ['to', 'too', '2'],
+            'of': ['of', 'ov'],
+            'is': ['is', 'iz'],
+            'it': ['it', 'itt'],
+            'he': ['he', 'hee'],
+            'she': ['she', 'shee'],
+            'we': ['we', 'wee'],
+            'me': ['me', 'mee'],
+            'my': ['my', 'mai'],
+            'you': ['you', 'u', 'yoo']
+        };
+        
+        // Check if expected word has variations
+        if (variations[expectedWord]) {
+            for (let variation of variations[expectedWord]) {
+                if (transcript.includes(variation) || variation.includes(transcript)) return true;
+                for (let word of transcript.split(/\s+/)) {
+                    if (word === variation || variation.includes(word) || word.includes(variation)) return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
     handleSuccess() {
